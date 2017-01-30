@@ -39,6 +39,11 @@ ul {
   ul .delete-task {
     display: none; }
 
+.button-delete{
+  position: absolute;
+  right: 180px;
+}
+
 .edit {
   z-index: 100;
   position: fixed;

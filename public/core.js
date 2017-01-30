@@ -5,19 +5,21 @@ $(document).ready(function () {
         $.ajax({
             type: 'post',
             url: 'api/todos',
-            data: {text: $item, done: false},
+            data: {
+                text: $item,
+                done: false
+            },
             cache: false,
             success: function (data) {
-                var todo = data;
                 if ($item) {
-                    $('#todoList').append('<li class="row valign-wrapper" id=' + (todo.length - 1) + '>' +
+                    $('#todoList').append('<li class="row valign-wrapper" id=' + (data.length - 1) + '>' +
                         '<p class="valign">' + $item + '</p>' +
                         '<button class="btn button-edit blue lighten-1">edit</button>' +
                         '<button class="btn button-delete pink darken-1">✕</button></li>');
                 }
+                countTasks();
             }
         });
-        countTasks();
     });
     function redraw() {
         $.ajax({
@@ -25,24 +27,24 @@ $(document).ready(function () {
             url: '/api/todos',
             cache: false,
             success: function (data) {
-                tasks = data;
-                for (var i = 0; i < tasks.length; i++) {
-                    if (tasks[i].done) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].done) {
                         $('#todoList').append('<li class="row valign-wrapper" id=' + i + '>' +
-                            '<p class="valign checked">' + tasks[i].text + '</p>' +
+                            '<p class="valign checked">' + data[i].text + '</p>' +
                             '<button class="btn button-edit blue lighten-1">edit</button>' +
                             '<button class="btn button-delete pink darken-1">✕</button></li>');
                     }
                     else {
                         $('#todoList').append('<li class="row valign-wrapper" id=' + i + '>' +
-                            '<p class="valign">' + tasks[i].text + '</p>' +
+                            '<p class="valign">' + data[i].text + '</p>' +
                             '<button class="btn button-edit blue lighten-1">edit</button>' +
                             '<button class="btn button-delete pink darken-1">✕</button></li>');
                     }
                 }
+                countTasks();
             }
         });
-        countTasks();
+
     }
 
 
@@ -54,24 +56,14 @@ $(document).ready(function () {
 
     $mainList.on('click', 'li p', function (e) {
         $(this).toggleClass('checked');
-        for (var i = 0; i < tasks.length; i++) {
-            if (tasks[i].text == $(this).text() && $(this).hasClass('checked')) {
-                tasks[i].done = true;
-            }
-            else if (tasks[i].taskValue == $(this).text()) {
-                tasks[i].isChecked = false;
-            }
-        }
-        // save();
         countTasks();
     });
 
     $mainList.on('click', '.button-delete', function (e) {
-        var idd = event.target;
+        var todoText = event.target;
         $.ajax({
             type: 'delete',
-            url: 'api/todos/' + $(idd).siblings('p').text()
-
+            url: 'api/todos/' + $(todoText).siblings('p').text()
         });
         $(this).parent().fadeOut('slow');
 
@@ -84,7 +76,7 @@ $(document).ready(function () {
             '<button class="btn button-save blue lighten-1">save</button>' +
             '<button class="btn button-cancel pink darken-1">cancel</button>' +
             '</div></div>');
-        var pp=$(this).siblings('p')[0].innerHTML;
+        var todoText = $(this).siblings('p')[0].innerHTML;
         $('#editInput').val($(this).siblings('p')[0].innerHTML);
 
         $('#edit').on('click', '.button-cancel', function (event) {
@@ -94,17 +86,17 @@ $(document).ready(function () {
 
         $('#edit').on('click', '.button-save', function (event) {
             var $div = $(event.target).parent();
-            // tasks[id].taskValue = $('#editInput').val();
             $('li#' + id + ' p').text($('#editInput').val());
             $.ajax({
                 type: 'put',
-                url: 'api/todos/' + pp +'/'+ $('#editInput').val(),
-                data: {text: $('#editInput').val()},
+                url: 'api/todos/' + todoText,
+                data: {
+                    text: $('#editInput').val()
+                },
                 cache: false,
                 success: function (data) {
                 }
             });
-            // save();
             $div.parent().remove();
         });
 

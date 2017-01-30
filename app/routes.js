@@ -33,9 +33,9 @@ module.exports = function (app) {
 
     });
 
-    app.delete('/api/todos/:todo_id', function (req, res) {
+    app.delete('/api/todos/:todo_text', function (req, res) {
         Todo.remove({
-            text: req.params.todo_id
+            text: req.params.todo_text
         }, function (err, todo) {
             if (err)
                 res.send(err);
@@ -48,12 +48,12 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/todos/:todo_text/:new_text', function (req, res) {
+    app.put('/api/todos/:todo_text', function (req, res) {
         Todo.update({
                 text: req.params.todo_text
             },
             {
-                text: req.params.new_text
+                text: req.body.text
             }, function (err, todos) {
                 if (err)
                     res.send(err);
